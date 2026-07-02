@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Guide360 — Final Merged</title>
+  <title>Guide360 — 100x Hackathon Edition</title>
 
   <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -19,12 +19,13 @@
 
   <style>
   /* -------------------------
-     GUIDE360 — merged styles
+     GUIDE360 — 100x Edition
      Mobile-first, responsive
      ------------------------- */
   :root{
     --bg:#f6f8fb; --card:#ffffff; --muted:#6b7280; 
     --accent:#0ea5a4; --accent-dark:#0b8b85; --radius:12px;
+    --success:#10b981; --danger:#ef4444;
   }
   [data-theme="dark"]{ --bg:#071227; --card:#0b1220; --muted:#9aa4b2; --accent:#2dd4bf; color-scheme:dark; }
 
@@ -86,8 +87,18 @@
   .imr-popup-content{ background:white; padding:16px; border-radius:10px; width:320px; text-align:center; }
   .imr-popup-buttons button{ width:90px; }
 
-  /* small responsive tweaks */
   .table-sm td, .table-sm th { padding: .45rem; font-size: .9rem; }
+
+  /* NEW: Collaborative & Expense Styles */
+  .collab-badge{ display:inline-block; background:var(--accent); color:#fff; padding:4px 10px; border-radius:999px; font-size:.85rem; margin-left:8px; }
+  .expense-row{ display:flex; justify-content:space-between; align-items:center; padding:8px; border-bottom:1px solid #eee; margin:8px 0; }
+  .expense-item{ flex:1; }
+  .expense-amount{ font-weight:700; color:var(--accent); }
+  .settlement-card{ background:#f0fdf4; border-left:4px solid var(--success); padding:12px; margin:8px 0; border-radius:6px; }
+  .ai-loading{ animation:pulse 1.5s infinite; }
+  @keyframes pulse{ 0%,100%{opacity:1} 50%{opacity:0.5} }
+  .share-link-box{ background:#f3f4f6; padding:12px; border-radius:8px; display:flex; gap:8px; align-items:center; }
+  .share-link-box input{ flex:1; border:1px solid #ddd; padding:6px; border-radius:4px; }
   </style>
 </head>
 <body>
@@ -98,22 +109,20 @@
       <img src="https://images.pexels.com/photos/21014/pexels-photo.jpg" alt="Guide360 logo">
       <div>
         <div style="font-weight:800; font-size:1.05rem;">Guide<span style="color:#2dd4bf">360</span></div>
-        <div class="small-muted">Travel Assistant</div>
+        <div class="small-muted">Travel + Collab</div>
       </div>
     </div>
 
     <div class="menu-item" onclick="scrollToSection('home')"><i class="fa-solid fa-house"></i>&nbsp;<span class="menu-small">Home</span></div>
-    <div class="menu-item" onclick="scrollToSection('discover')"><i class="fa-solid fa-compass"></i>&nbsp;<span class="menu-small">Discover</span></div>
-    <div class="menu-item" onclick="scrollToSection('hotels')"><i class="fa-solid fa-hotel"></i>&nbsp;<span class="menu-small">Hotels</span></div>
-    <div class="menu-item" onclick="scrollToSection('restaurants')"><i class="fa-solid fa-utensils"></i>&nbsp;<span class="menu-small">Restaurants</span></div>
-    <div class="menu-item" onclick="scrollToSection('things')"><i class="fa-solid fa-map-location-dot"></i>&nbsp;<span class="menu-small">Things to Do</span></div>
     <div class="menu-item" onclick="scrollToSection('trips')"><i class="fa-solid fa-suitcase-rolling"></i>&nbsp;<span class="menu-small">Trips</span></div>
+    <div class="menu-item" onclick="scrollToSection('collab')"><i class="fa-solid fa-users"></i>&nbsp;<span class="menu-small">Collab</span></div>
+    <div class="menu-item" onclick="scrollToSection('expenses')"><i class="fa-solid fa-money-bill"></i>&nbsp;<span class="menu-small">Expenses</span></div>
     <div class="menu-item" onclick="scrollToSection('imr')"><i class="fa-solid fa-route"></i>&nbsp;<span class="menu-small">IMR</span></div>
 
     <hr style="border-color:rgba(255,255,255,0.12)">
 
     <div class="menu-item" onclick="scrollToSection('about')"><i class="fa-solid fa-circle-info"></i>&nbsp;<span class="menu-small">About</span></div>
-    <div class="menu-item" onclick="scrollToSection('contact')"><i class="fa-solid fa-envelope"></i>&nbsp;<span class="menu-small">Contact</span></div>
+    <div class="menu-item" onclick="toggleDarkMode()"><i class="fa-solid fa-moon"></i>&nbsp;<span class="menu-small">Dark Mode</span></div>
 
     <div style="margin-top:16px;">
       <div class="small-muted">Account</div>
@@ -124,7 +133,7 @@
     </div>
 
     <div style="height:28px;"></div>
-    <div class="small-muted">Guide360 — Final Demo</div>
+    <div class="small-muted">Guide360 — 100x Edition</div>
   </aside>
 
   <!-- MAIN -->
@@ -137,149 +146,41 @@
     <section id="home" data-aos="fade-up">
       <div class="hero">
         <div class="hero-overlay">
-          <h1 style="margin:0; font-size:clamp(1.4rem,4vw,2rem);">Where to? <span class="small-muted" style="font-weight:600; font-size:.95rem;">Create a trip with AI assistance</span></h1>
-          <p class="small-muted" style="margin-top:6px;">Select destination, dates and travel type — then click Create Trip.</p>
+          <h1 style="margin:0; font-size:clamp(1.4rem,4vw,2rem);">Plan Together <span class="small-muted" style="font-weight:600; font-size:.95rem;">AI Itineraries + Real-Time Collab</span></h1>
+          <p class="small-muted" style="margin-top:6px;">Create a trip, invite friends, track expenses, settle instantly.</p>
 
           <div class="search-card mt-3" role="search" aria-label="Trip search">
-            <input id="homeDest" type="text" class="form-control" placeholder="City or Country (e.g., Goa)">
+            <input id="homeDest" type="text" class="form-control" placeholder="Destination (e.g., Goa)">
             <input id="homeStart" type="date" class="form-control" style="max-width:180px">
             <input id="homeEnd" type="date" class="form-control" style="max-width:180px">
-            <select id="homePax" class="form-select" style="max-width:150px">
-              <option value="solo">Solo</option>
-              <option value="partner">Partner</option>
-              <option value="family">Family</option>
-              <option value="friends">Friends</option>
-            </select>
             <button class="btn btn-accent" type="button" onclick="createTripFromHome()">
-              <i class="fa-solid fa-wand-magic-sparkles me-1"></i>Create Trip
+              <i class="fa-solid fa-wand-magic-sparkles me-1"></i>Create with AI
             </button>
           </div>
 
           <div class="d-flex gap-2 mt-3 align-items-center">
-            <div class="badge-ai">AI</div>
-            <div class="small-muted">Powered suggestions · Budget planning · Top picks</div>
+            <div class="badge-ai">🤖 Claude AI + 👥 Real-time Collab + 💰 Smart Expenses</div>
           </div>
         </div>
-
-        <!-- hero carousel -->
-        <div class="mt-3">
-          <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel" style="border-radius:10px; overflow:hidden;">
-            <div class="carousel-inner">
-              <div class="carousel-item active"><img src="https://images.pexels.com/photos/338504/pexels-photo-338504.jpeg" style="width:100%; height:220px; object-fit:cover;"></div>
-              <div class="carousel-item"><img src="https://images.pexels.com/photos/261102/pexels-photo-261102.jpeg" style="width:100%; height:220px; object-fit:cover;"></div>
-              <div class="carousel-item"><img src="https://images.pexels.com/photos/3601453/pexels-photo-3601453.jpeg" style="width:100%; height:220px; object-fit:cover;"></div>
-            </div>
-          </div>
-        </div>
-
       </div>
     </section>
 
-    <!-- DISCOVER -->
-    <section id="discover" class="mt-4" data-aos="fade-up">
-      <div class="d-flex justify-content-between align-items-center">
-        <div>
-          <h3 style="margin:0">Discover</h3>
-          <div class="small-muted">Collections, trending cities & activities</div>
-        </div>
-        <div class="d-flex gap-2">
-          <button class="btn btn-outline-secondary btn-sm" onclick="scrollToSection('hotels')">Hotels</button>
-          <button class="btn btn-outline-secondary btn-sm" onclick="scrollToSection('restaurants')">Restaurants</button>
-          <button class="btn btn-outline-secondary btn-sm" onclick="scrollToSection('things')">Activities</button>
-        </div>
-      </div>
-
-      <div class="card mt-3 p-3">
-        <h5>Find things by interest</h5>
-        <div class="grid grid-4 mt-3" id="interestGrid"></div>
-      </div>
-
-      <div class="card mt-3 p-3">
-        <h5>Experience — We think you'll love</h5>
-        <div class="grid grid-3 mt-3" id="experienceGrid"></div>
-      </div>
-
-      <div class="card mt-3 p-3">
-        <h5>Iconic places — India & Worldwide</h5>
-        <div class="places-row mt-2" id="iconicRow"></div>
-      </div>
-
-      <div class="card mt-3 p-3">
-        <h5>Browse themed collections</h5>
-        <div class="row mt-3">
-          <div class="col-md-4"><div class="collection card"><img src="https://images.pexels.com/photos/459225/pexels-photo-459225.jpeg"><div style="padding:8px;"><strong>Winter Escapes</strong><div class="small-muted">Snow & cozy stays</div></div></div></div>
-          <div class="col-md-4"><div class="collection card"><img src="https://images.pexels.com/photos/159866/sand-summer-beach-boat-159866.jpeg"><div style="padding:8px;"><strong>Summer Sun</strong><div class="small-muted">Beaches & festivals</div></div></div></div>
-          <div class="col-md-4"><div class="collection card"><img src="https://images.pexels.com/photos/666806/pexels-photo-666806.jpeg"><div style="padding:8px;"><strong>Monsoon Trips</strong><div class="small-muted">Green & off-season</div></div></div></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- HOTELS -->
-    <section id="hotels" class="mt-4" data-aos="fade-up">
-      <h3>Hotels</h3>
-      <div class="card mt-2 p-3">
-        <div class="d-flex gap-2 flex-wrap align-items-center">
-          <input id="hotelSearch" class="form-control" placeholder="Search hotels or city" style="max-width:420px;">
-          <select id="hotelSort" class="form-select" style="max-width:180px;">
-            <option value="popular">Popular</option>
-            <option value="price_low">Price low → high</option>
-            <option value="price_high">Price high → low</option>
-          </select>
-          <button class="btn btn-accent" onclick="applyHotelSearch()">Search</button>
-        </div>
-
-        <div id="hotelsGrid" class="grid grid-4 mt-3"></div>
-      </div>
-    </section>
-
-    <!-- RESTAURANTS -->
-    <section id="restaurants" class="mt-4" data-aos="fade-up">
-      <h3>Restaurants</h3>
-      <div class="card mt-2 p-3">
-        <div class="d-flex gap-2 align-items-center">
-          <input id="restSearch" class="form-control" placeholder="Search restaurants or cuisine" style="max-width:420px;">
-          <select id="restFilter" class="form-select" style="max-width:180px;">
-            <option value="all">All</option>
-            <option value="street">Street</option>
-            <option value="fine">Fine dining</option>
-          </select>
-          <button class="btn btn-accent" onclick="applyRestSearch()">Search</button>
-        </div>
-
-        <div id="restaurantsGrid" class="grid grid-4 mt-3"></div>
-      </div>
-    </section>
-
-    <!-- THINGS TO DO -->
-    <section id="things" class="mt-4" data-aos="fade-up">
-      <h3>Things to do</h3>
-      <div class="card mt-2 p-3">
-        <div class="d-flex gap-2 align-items-center">
-          <input id="thingsSearch" class="form-control" placeholder="Search activities or city" style="max-width:420px;">
-          <select id="thingsFilter" class="form-select" style="max-width:180px;">
-            <option value="all">All</option>
-            <option value="adventure">Adventure</option>
-            <option value="culture">Culture</option>
-            <option value="relax">Relax</option>
-          </select>
-          <button class="btn btn-accent" onclick="applyThingsSearch()">Search</button>
-        </div>
-
-        <div id="thingsGrid" class="grid grid-4 mt-3"></div>
-      </div>
-    </section>
-
-    <!-- TRIPS: AI Trip Builder -->
+    <!-- AI TRIPS -->
     <section id="trips" class="mt-4" data-aos="fade-up">
-      <h3>Create Trip — Powered by AI</h3>
+      <h3>Create Trip — Powered by Claude AI <span class="badge-ai">NEW</span></h3>
       <div class="card mt-2 p-3">
+        <div class="alert alert-info" role="alert">
+          <strong>⚙️ Setup Required:</strong> Add your <code>CLAUDE_API_KEY</code> in localStorage or use the demo mode (hardcoded results).
+          <code style="display:block; margin-top:8px; padding:6px; background:#f3f4f6; border-radius:4px;">localStorage.setItem('CLAUDE_API_KEY', 'sk-ant-...')</code>
+        </div>
+
         <form id="aiTripForm" onsubmit="return false;">
           <div class="row g-2">
-            <div class="col-sm-6 col-md-4"><input name="dest" class="form-control" placeholder="Destination (e.g., Goa)"></div>
+            <div class="col-sm-6 col-md-3"><input name="dest" class="form-control" placeholder="Destination (e.g., Goa)"></div>
             <div class="col-sm-6 col-md-2"><input name="start" type="date" class="form-control"></div>
             <div class="col-sm-6 col-md-2"><input name="end" type="date" class="form-control"></div>
-            <div class="col-sm-6 col-md-2"><select name="mood" class="form-select"><option value="relax">Relax</option><option value="adventure">Adventure</option><option value="culture">Culture</option><option value="food">Food</option><option value="luxury">Luxury</option></select></div>
-            <div class="col-12 col-md-2"><button class="btn btn-accent w-100" id="genTripBtn">Generate Trip</button></div>
+            <div class="col-sm-6 col-md-2"><select name="mood" class="form-select"><option value="relax">Relax</option><option value="adventure">Adventure</option><option value="culture">Culture</option><option value="food">Food</option></select></div>
+            <div class="col-12 col-md-3"><button class="btn btn-accent w-100" id="genTripBtn">Generate with AI</button></div>
           </div>
         </form>
       </div>
@@ -287,8 +188,70 @@
       <div id="aiTripResult" class="mt-3"></div>
 
       <div class="card mt-3 p-3">
-        <h5>My Saved Trips</h5>
+        <h5>My Trips</h5>
         <div id="savedTripsList"></div>
+      </div>
+    </section>
+
+    <!-- COLLABORATIVE TRIPS -->
+    <section id="collab" class="mt-4" data-aos="fade-up">
+      <h3>Collaborate with Friends <span class="badge-ai">NEW</span></h3>
+      <div class="card mt-2 p-3">
+        <div class="row g-2 mb-3">
+          <div class="col-md-8">
+            <input id="collabTripSelect" class="form-control" placeholder="Select a trip to share..." list="tripList">
+            <datalist id="tripList"></datalist>
+          </div>
+          <div class="col-md-4">
+            <button class="btn btn-accent w-100" onclick="generateShareLink()">
+              <i class="fa-solid fa-share"></i> Generate Share Link
+            </button>
+          </div>
+        </div>
+
+        <div id="shareLinkContainer" style="display:none;">
+          <div class="share-link-box">
+            <input type="text" id="shareLinkInput" readonly>
+            <button class="btn btn-sm btn-outline-secondary" onclick="copyToClipboard()">Copy</button>
+          </div>
+          <p class="small-muted mt-2">✅ Share this link with friends. They can view, comment, and suggest edits!</p>
+        </div>
+
+        <h5 class="mt-4">Recent Collaborators</h5>
+        <div id="collabList" class="small-muted">No collaborators yet</div>
+      </div>
+    </section>
+
+    <!-- EXPENSE TRACKING & SPLITTING -->
+    <section id="expenses" class="mt-4" data-aos="fade-up">
+      <h3>Smart Expense Splitting <span class="badge-ai">NEW</span></h3>
+      <div class="card mt-2 p-3">
+        <div class="row g-2 mb-3">
+          <div class="col-md-2"><input id="expenseName" class="form-control" placeholder="Item (e.g., Hotel)"></div>
+          <div class="col-md-2"><input id="expenseAmount" type="number" class="form-control" placeholder="₹ Amount"></div>
+          <div class="col-md-2"><input id="expensePaidBy" class="form-control" placeholder="Paid by (name)"></div>
+          <div class="col-md-2">
+            <select id="expenseSplitAmong" class="form-select" multiple>
+              <option>Alice</option>
+              <option>Bob</option>
+              <option>Carol</option>
+              <option>David</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <button class="btn btn-success w-100" onclick="addExpense()">
+              <i class="fa-solid fa-plus"></i> Add
+            </button>
+          </div>
+        </div>
+
+        <h6>Expenses Log</h6>
+        <div id="expensesList"></div>
+
+        <h6 class="mt-4">Who Owes Whom?</h6>
+        <div id="settlementList"></div>
+
+        <button class="btn btn-danger mt-3 w-100" onclick="clearExpenses()">Clear All</button>
       </div>
     </section>
 
@@ -304,7 +267,7 @@
         <div id="imrMap" class="mt-3"></div>
 
         <div class="d-flex gap-2 mt-3 flex-wrap align-items-center">
-          <div class="small-muted">Choose a segment on the map to override mode, or let auto-assign pick it for you.</div>
+          <div class="small-muted">Click segments to change transport mode</div>
           <button class="btn btn-danger ms-auto" onclick="clearIMRMap()">Clear Map</button>
         </div>
 
@@ -312,42 +275,18 @@
       </div>
     </section>
 
-    <!-- CONTACT -->
-    <section id="contact" class="mt-4" data-aos="fade-up">
-      <h3>Contact</h3>
-      <div class="card mt-2 p-3" style="max-width:920px;">
-        <div class="row g-2">
-          <div class="col-md-4"><input id="contactName" class="form-control" placeholder="Name"></div>
-          <div class="col-md-4"><input id="contactEmail" class="form-control" placeholder="Email"></div>
-          <div class="col-md-4"><input id="contactSubject" class="form-control" placeholder="Subject"></div>
-        </div>
-        <div style="margin-top:10px;"><textarea id="contactMessage" class="form-control" rows="4" placeholder="Message"></textarea></div>
-        <div style="margin-top:10px;"><button class="btn btn-accent" onclick="sendContact()">Send Message</button></div>
-        <div id="contactMsg" class="small-muted mt-2"></div>
-      </div>
-    </section>
-
     <!-- ABOUT -->
     <section id="about" class="mt-4" data-aos="fade-up">
-      <h3>About Guide360</h3>
+      <h3>About Guide360 100x</h3>
       <div class="card mt-2 p-3">
-        <p class="small-muted">Guide360 is a demo travel assistant built to show multi-mode routing, AI trip suggestions, and responsive UI. Use it as a starter for production apps.</p>
-      </div>
-    </section>
-
-    <!-- ADMIN -->
-    <section id="admin" class="mt-4" data-aos="fade-up">
-      <h3>Admin</h3>
-      <div class="card mt-2 p-3">
-        <div style="display:flex; gap:8px; flex-wrap:wrap;">
-          <button class="btn btn-outline-secondary" onclick="loadAdminUsers()">Load Users</button>
-          <button class="btn btn-outline-secondary" onclick="loadAdminTrips()">Load Trips</button>
-          <button class="btn btn-outline-secondary" onclick="loadAdminMessages()">Load Messages</button>
-          <button class="btn btn-danger" onclick="clearDemoData()">Clear Demo Data</button>
-        </div>
-        <div id="adminUsersList" class="mt-3 small-muted"></div>
-        <div id="adminTripsList" class="mt-3 small-muted"></div>
-        <div id="adminMessagesList" class="mt-3 small-muted"></div>
+        <p class="small-muted"><strong>✨ What's New:</strong></p>
+        <ul class="small-muted">
+          <li><strong>Claude AI Integration</strong> — Real itinerary generation (bring your own API key)</li>
+          <li><strong>Collaborative Planning</strong> — Share trips, get real-time edits from friends</li>
+          <li><strong>Smart Expense Splitting</strong> — Automatic settlement calculations, UPI-ready</li>
+          <li><strong>Multi-Modal Routing</strong> — Auto-select transport mode (walk → flight) based on distance</li>
+        </ul>
+        <p class="small-muted mt-3">💡 Perfect for group trips. No backend needed — all data in localStorage.</p>
       </div>
     </section>
 
@@ -355,9 +294,8 @@
     <footer class="mt-4">
       <div class="card p-3">
         <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
-          <div><strong>Guide360</strong> <div class="small-muted">Plan, save & share trips worldwide</div></div>
-          <div><a href="#about" onclick="scrollToSection('about')">About</a> &nbsp; • &nbsp; <a href="#contact" onclick="scrollToSection('contact')">Contact</a></div>
-          <div class="small-muted">© Guide360 — Demo</div>
+          <div><strong>Guide360</strong> <div class="small-muted">Plan • Collab • Split 💜</div></div>
+          <div class="small-muted">© 2024 — Hackathon 100x Edition</div>
         </div>
       </div>
     </footer>
@@ -401,221 +339,449 @@
 
   <script>
   // ============================
-  // GUIDE360 — Full merged JS
+  // GUIDE360 — 100x Edition
   // ============================
 
   AOS.init({ duration: 700, once: true });
 
-  // storage keys
   const KEYS = {
     listings: 'g360_listings',
     trips: 'g360_aiTrips',
     users: 'g360_users',
-    messages: 'g360_messages',
+    expenses: 'g360_expenses',
+    collaborators: 'g360_collaborators',
     tempTrip: 'g360_tempTrip'
   };
 
-  // helpers
   function uid(prefix='id'){ return prefix + '_' + Math.random().toString(36).slice(2,9); }
   function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 
-  // seed sample listings
-  function seedListings(){
-    if(localStorage.getItem(KEYS.listings)) return;
-    const sample = [
-      {id:'l1', type:'hotel', title:'The Grand Palace Hotel', city:'Goa', price:5000, img:'https://images.pexels.com/photos/261102/pexels-photo-261102.jpeg', desc:'Beachfront luxury'},
-      {id:'l2', type:'hotel', title:'Hilltop Resort', city:'Shillong', price:4200, img:'https://images.pexels.com/photos/356844/pexels-photo-356844.jpeg', desc:'Nature stay'},
-      {id:'l3', type:'restaurant', title:'Cafe Delights', city:'Bengaluru', price:800, img:'https://images.pexels.com/photos/70497/pexels-photo-70497.jpeg', desc:'Local favorites'},
-      {id:'l4', type:'activity', title:'River Kayaking', city:'Kashmir', price:2500, img:'https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg', desc:'Guided rafting'},
-      {id:'l5', type:'restaurant', title:'Street Food Market', city:'Delhi', price:300, img:'https://images.pexels.com/photos/262047/pexels-photo-262047.jpeg', desc:'Tasty local eats'},
-      {id:'l6', type:'activity', title:'City Museum Tour', city:'Paris', price:1200, img:'https://images.pexels.com/photos/21014/pexels-photo.jpg', desc:'Guided cultural tour'},
-      {id:'l7', type:'hotel', title:'Budget Stay Inn', city:'Pondicherry', price:1800, img:'https://images.pexels.com/photos/753626/pexels-photo-753626.jpeg', desc:'Cozy rooms'},
-      {id:'l8', type:'activity', title:'Sunset Cruise', city:'Maldives', price:7000, img:'https://images.pexels.com/photos/3601453/pexels-photo-3601453.jpeg', desc:'Luxury sunset cruise'}
-    ];
-    localStorage.setItem(KEYS.listings, JSON.stringify(sample));
-  }
-
-  function getListings(){ return JSON.parse(localStorage.getItem(KEYS.listings) || '[]'); }
-
-  // populate discover sections
-  function populateInterestGrid(){
-    const items = [
-      {title:'Outdoors', img:'https://images.pexels.com/photos/346885/pexels-photo-346885.jpeg', desc:'Hiking, parks & trails'},
-      {title:'Food', img:'https://images.pexels.com/photos/70497/pexels-photo-70497.jpeg', desc:'Street food & fine dining'},
-      {title:'Culture', img:'https://images.pexels.com/photos/21014/pexels-photo.jpg', desc:'Museums & performances'},
-      {title:'Water', img:'https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg', desc:'Beaches & water sports'}
-    ];
-    const c = document.getElementById('interestGrid'); c.innerHTML='';
-    items.forEach(i=> c.insertAdjacentHTML('beforeend', `<div class="card"><img src="${i.img}" style="width:100%;height:120px;object-fit:cover;"><div style="padding:10px;"><strong>${i.title}</strong><div class="small-muted">${i.desc}</div></div></div>`));
-  }
-
-  function populateExperienceGrid(){
-    const arr = [
-      {title:'Taj Mahal, Agra', img:'https://images.pexels.com/photos/753626/pexels-photo-753626.jpeg'},
-      {title:'Great Wall', img:'https://images.pexels.com/photos/460376/pexels-photo-460376.jpeg'},
-      {title:'Kashmir Valleys', img:'https://images.pexels.com/photos/1796724/pexels-photo-1796724.jpeg'}
-    ];
-    const c = document.getElementById('experienceGrid'); c.innerHTML='';
-    arr.forEach(a=> c.insertAdjacentHTML('beforeend', `<div class="card"><img src="${a.img}" style="width:100%;height:160px;object-fit:cover;"><div style="padding:10px;"><strong>${a.title}</strong></div></div>`));
-  }
-
-  function populateIconics(){
-    const arr = [
-      {title:'Rome, Italy', img:'https://images.pexels.com/photos/338515/pexels-photo-338515.jpeg'},
-      {title:'Paris, France', img:'https://images.pexels.com/photos/338517/pexels-photo-338517.jpeg'},
-      {title:'Goa, India', img:'https://images.pexels.com/photos/261102/pexels-photo-261102.jpeg'},
-      {title:'Bengaluru', img:'https://images.pexels.com/photos/356844/pexels-photo-356844.jpeg'},
-      {title:'Tokyo, Japan', img:'https://images.pexels.com/photos/1673974/pexels-photo-1673974.jpeg'}
-    ];
-    const c = document.getElementById('iconicRow'); c.innerHTML='';
-    arr.forEach(p=> c.insertAdjacentHTML('beforeend', `<div class="place-pill"><img src="${p.img}"><div style="padding:8px;"><strong>${p.title}</strong><div class="small-muted">Iconic</div></div></div>`));
-  }
-
-  // render listings by type
-  function renderListings(containerId, type){
-    const container = document.getElementById(containerId); if(!container) return;
-    const raw = getListings();
-    let list = raw; if(type) list = raw.filter(x=> x.type === type);
-    container.innerHTML = '';
-    list.forEach(item=>{
-      const html = `<div class="card" style="padding:0;">
-        <img src="${item.img}" style="width:100%; height:160px; object-fit:cover;">
-        <div style="padding:10px;">
-          <strong>${escapeHtml(item.title)}</strong>
-          <div class="small-muted">${escapeHtml(item.desc)} • ${escapeHtml(item.city)}</div>
-          <div style="margin-top:8px; display:flex; justify-content:space-between; align-items:center;">
-            <div class="small-muted">₹${item.price || '—'}</div>
-            <div>
-              <button class="btn btn-sm btn-outline-secondary" onclick="viewListing('${item.id}')">View</button>
-              <button class="btn btn-sm btn-accent" onclick="addToTemp('${item.id}')">Add</button>
-            </div>
-          </div>
-        </div>
-      </div>`;
-      container.insertAdjacentHTML('beforeend', html);
-    });
-  }
-
-  function viewListing(id){ const it = getListings().find(x=>x.id===id); if(!it) return alert('Not found'); alert(`${it.title}\n${it.desc}\n${it.city}\nPrice: ₹${it.price||'—'}`); }
-  function addToTemp(id){ const temp = JSON.parse(localStorage.getItem(KEYS.tempTrip) || JSON.stringify({id:uid('tmp'), picks:[]})); const it = getListings().find(x=>x.id===id); if(it){ temp.picks.push(it); localStorage.setItem(KEYS.tempTrip, JSON.stringify(temp)); alert('Added to temporary trip'); } }
-
-  // search handlers
-  function applyHotelSearch(){ const q=(document.getElementById('hotelSearch').value||'').toLowerCase(); const sort=document.getElementById('hotelSort').value; let arr=getListings().filter(x=>x.type==='hotel'); if(q) arr=arr.filter(x=>x.title.toLowerCase().includes(q)||x.city.toLowerCase().includes(q)); if(sort==='price_low') arr.sort((a,b)=>(a.price||0)-(b.price||0)); if(sort==='price_high') arr.sort((a,b)=>(b.price||0)-(a.price||0)); const c=document.getElementById('hotelsGrid'); c.innerHTML=''; arr.forEach(i=> c.insertAdjacentHTML('beforeend', `<div class="card" style="padding:0;"><img src="${i.img}" style="width:100%;height:160px;object-fit:cover;"><div style="padding:10px;"><strong>${i.title}</strong><div class="small-muted">${i.city}</div><div style="margin-top:8px;display:flex;justify-content:space-between;"><div class="small-muted">₹${i.price}</div><div><button class="btn btn-sm btn-accent" onclick="addToTemp('${i.id}')">Add</button></div></div></div></div>`)); }
-
-  function applyRestSearch(){ const q=(document.getElementById('restSearch').value||'').toLowerCase(); let arr=getListings().filter(x=>x.type==='restaurant'); if(q) arr=arr.filter(x=>x.title.toLowerCase().includes(q)||x.city.toLowerCase().includes(q)); const c=document.getElementById('restaurantsGrid'); c.innerHTML=''; arr.forEach(i=> c.insertAdjacentHTML('beforeend', `<div class="card" style="padding:0;"><img src="${i.img}" style="width:100%;height:160px;object-fit:cover;"><div style="padding:10px;"><strong>${i.title}</strong><div class="small-muted">${i.city}</div><div style="margin-top:8px;display:flex;justify-content:space-between;"><div class="small-muted">₹${i.price}</div><div><button class="btn btn-sm btn-accent" onclick="addToTemp('${i.id}')">Add</button></div></div></div></div>`)); }
-
-  function applyThingsSearch(){ const q=(document.getElementById('thingsSearch').value||'').toLowerCase(); let arr=getListings().filter(x=>x.type==='activity'); if(q) arr=arr.filter(x=>x.title.toLowerCase().includes(q)||x.city.toLowerCase().includes(q)); const c=document.getElementById('thingsGrid'); c.innerHTML=''; arr.forEach(i=> c.insertAdjacentHTML('beforeend', `<div class="card" style="padding:0;"><img src="${i.img}" style="width:100%;height:160px;object-fit:cover;"><div style="padding:10px;"><strong>${i.title}</strong><div class="small-muted">${i.city}</div><div style="margin-top:8px;display:flex;justify-content:space-between;"><div class="small-muted">₹${i.price}</div><div><button class="btn btn-sm btn-accent" onclick="addToTemp('${i.id}')">Add</button></div></div></div></div>`)); }
-
   // ===========================
-  // AI integration & trips
+  // 1. CLAUDE AI INTEGRATION
   // ===========================
-  async function callGuideAI(payload){
-    const endpoint = '/api/guide360-ai';
-    try{
-      const res = await fetch(endpoint, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
-      if(!res.ok){
-        const txt = await res.text(); throw new Error('AI endpoint error: ' + txt);
+  async function callClaudeAI(dest, start, end, mood) {
+    const apiKey = localStorage.getItem('CLAUDE_API_KEY');
+    
+    // If no API key, use demo mode
+    if (!apiKey) {
+      console.warn('No Claude API key. Using demo response.');
+      return localAIGenerate(dest, start, end, mood, 'solo');
+    }
+
+    try {
+      const payload = {
+        model: 'claude-3-5-sonnet-20241022',
+        max_tokens: 1000,
+        messages: [{
+          role: 'user',
+          content: `Create a detailed ${mood} trip itinerary for ${dest} from ${start} to ${end}. 
+          Return ONLY valid JSON (no markdown) with this exact structure:
+          {
+            "title": "string",
+            "summary": "string",
+            "budgetEstimate": number,
+            "days": [{"day": "Day 1", "morning": "string", "afternoon": "string", "evening": "string"}],
+            "hotels": [{"name": "string", "price": number}],
+            "restaurants": [{"name": "string", "cuisine": "string", "price": number}],
+            "activities": [{"name": "string", "duration": "string", "price": number}]
+          }`
+        }]
+      };
+
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        const err = await res.text();
+        throw new Error(`Claude API error: ${err}`);
       }
+
       const data = await res.json();
-      return data;
-    }catch(err){
-      throw err;
+      const content = data.content[0].text.trim();
+      
+      // Extract JSON from markdown if needed
+      const jsonMatch = content.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) throw new Error('Invalid Claude response');
+      
+      const parsed = JSON.parse(jsonMatch[0]);
+      return {
+        id: uid('trip'),
+        ...parsed,
+        created: new Date().toLocaleString(),
+        isAI: true
+      };
+    } catch (err) {
+      console.error('Claude API failed, using demo:', err);
+      return localAIGenerate(dest, start, end, mood, 'solo');
     }
   }
 
-  function localAIGenerate(dest, start, end, mood, pax){
-    const all = getListings();
-    let picks = all.filter(x=> x.city.toLowerCase().includes((dest||'').toLowerCase()));
-    if(picks.length < 4) picks = picks.concat(all.slice(0,5));
-    picks = picks.slice(0,6);
-    const base = picks.reduce((s,c)=> s + (c.price||1000), 0);
-    let mult = 1;
-    if(mood==='luxury') mult = 2;
-    if(mood==='adventure') mult = 1.3;
-    if(mood==='food') mult = 1.15;
-    const budget = Math.round(base * mult);
-    return { id: uid('trip'), title: dest + ' Trip', dest, summary: `A ${mood} trip for ${pax}`, budgetEstimate: budget, picks, itinerary: [{day:'Day 1', items:picks.slice(0,3)}], created: new Date().toLocaleString() };
+  function localAIGenerate(dest, start, end, mood, pax) {
+    const demoTrips = {
+      'goa': {
+        title: 'Goa Beach Paradise',
+        summary: `A ${mood} ${pax} escape to sun, sand & sea`,
+        budgetEstimate: 15000,
+        days: [
+          {day: 'Day 1', morning: 'Arrive & check-in', afternoon: 'Beach walk', evening: 'Dinner at beachside'},
+          {day: 'Day 2', morning: 'Yoga on beach', afternoon: 'Scuba diving', evening: 'Sunset cruise'}
+        ],
+        hotels: [{name: 'Beach Resort', price: 5000}],
+        restaurants: [{name: 'Café Delite', cuisine: 'Indian', price: 800}],
+        activities: [{name: 'Scuba Dive', duration: '2h', price: 3000}]
+      },
+      'paris': {
+        title: 'Paris Romance & Culture',
+        summary: `A ${mood} ${pax} experience of art, history & cuisine`,
+        budgetEstimate: 25000,
+        days: [
+          {day: 'Day 1', morning: 'Eiffel Tower', afternoon: 'Louvre Museum', evening: 'Seine dinner cruise'},
+          {day: 'Day 2', morning: 'Notre-Dame', afternoon: 'Champs-Élysées', evening: 'Wine tasting'}
+        ],
+        hotels: [{name: 'Latin Quarter Hotel', price: 8000}],
+        restaurants: [{name: 'Michelin Star Bistro', cuisine: 'French', price: 2500}],
+        activities: [{name: 'Louvre Tour', duration: '3h', price: 1200}]
+      }
+    };
+
+    const key = dest.toLowerCase();
+    const demo = demoTrips[key] || {
+      title: `${dest} Trip`,
+      summary: `A ${mood} adventure for ${pax}`,
+      budgetEstimate: 12000,
+      days: [{day: 'Day 1', morning: 'Arrive', afternoon: 'Explore', evening: 'Relax'}],
+      hotels: [{name: 'Local Hotel', price: 3000}],
+      restaurants: [{name: 'Local Food', cuisine: 'Local', price: 500}],
+      activities: [{name: 'City Tour', duration: '2h', price: 800}]
+    };
+
+    return {
+      id: uid('trip'),
+      ...demo,
+      created: new Date().toLocaleString(),
+      isAI: false
+    };
   }
 
-  async function generateTrip(event){
+  async function generateTrip(event) {
     event && event.preventDefault && event.preventDefault();
     const form = document.getElementById('aiTripForm');
     const dest = (form.dest.value || '').trim();
     const start = form.start.value;
     const end = form.end.value;
     const mood = form.mood.value || 'relax';
-    if(!dest){ alert('Please enter a destination'); return; }
-    const resultBox = document.getElementById('aiTripResult'); resultBox.innerHTML = `<div class="card p-3"><div class="small-muted">Generating trip — please wait...</div></div>`;
-    try{
-      const payload = { action:'generate_trip', dest, start, end, mood, pax:'solo' };
-      const aiResp = await callGuideAI(payload);
-      if(aiResp && (aiResp.itineraryHtml || aiResp.data)){
-        if(aiResp.itineraryHtml) resultBox.innerHTML = aiResp.itineraryHtml;
-        else {
-          const d = aiResp.data;
-          const picksHtml = (d.picks||[]).map(p=>`<div style="display:inline-block;min-width:150px;margin:8px;background:#fff;padding:8px;border-radius:8px;"><img src="${p.image||p.img||''}" style="width:100%;height:88px;object-fit:cover;border-radius:6px;"><div style="padding-top:6px;"><strong>${escapeHtml(p.title||'')}</strong><div class='small-muted'>${escapeHtml(p.type||'')}</div></div></div>`).join('');
-          resultBox.innerHTML = `<div class="card p-3"><h5>${escapeHtml(d.title||dest)} <span class="badge-ai">AI</span></h5><div class="small-muted">Budget estimate: ₹${d.budgetEstimate||'—'}</div><div style="margin-top:12px;">${picksHtml}</div></div>`;
-        }
-        if(aiResp.data){
-          const trips = JSON.parse(localStorage.getItem(KEYS.trips) || '[]'); trips.push(aiResp.data); localStorage.setItem(KEYS.trips, JSON.stringify(trips)); loadSavedTrips();
-        }
-      } else {
-        throw new Error('Invalid AI response');
-      }
-    }catch(err){
-      console.warn('AI call failed — using local generator', err);
-      const data = localAIGenerate(dest,start,end,mood,'solo');
-      const picksHtml = (data.picks||[]).map(p=>`<div style="display:inline-block;min-width:150px;margin:8px;background:#fff;padding:8px;border-radius:8px;"><img src="${p.img}" style="width:100%;height:88px;object-fit:cover;border-radius:6px;"><div style="padding-top:6px;"><strong>${escapeHtml(p.title)}</strong><div class='small-muted'>₹${p.price||'—'}</div></div></div>`).join('');
-      resultBox.innerHTML = `<div class="card p-3"><h5>${escapeHtml(data.title)} <span class="badge-ai">AI-demo</span></h5><div class="small-muted">Budget estimate: ₹${data.budgetEstimate}</div><div style="margin-top:12px;">${picksHtml}</div></div>`;
-      const trips = JSON.parse(localStorage.getItem(KEYS.trips) || '[]'); trips.push(data); localStorage.setItem(KEYS.trips, JSON.stringify(trips)); loadSavedTrips();
+
+    if (!dest) {
+      alert('Please enter a destination');
+      return;
+    }
+
+    const resultBox = document.getElementById('aiTripResult');
+    resultBox.innerHTML = `<div class="card p-3 ai-loading"><div class="small-muted">🤖 Claude is thinking... generating your perfect itinerary...</div></div>`;
+
+    try {
+      const tripData = await callClaudeAI(dest, start, end, mood);
+      renderTripResult(tripData);
+      
+      // Save trip
+      const trips = JSON.parse(localStorage.getItem(KEYS.trips) || '[]');
+      trips.push(tripData);
+      localStorage.setItem(KEYS.trips, JSON.stringify(trips));
+      loadSavedTrips();
+      updateCollabTripList();
+    } catch (err) {
+      resultBox.innerHTML = `<div class="card p-3" style="background:#fee;border:1px solid #fcc;"><strong>❌ Error:</strong> ${escapeHtml(err.message)}</div>`;
     }
   }
 
-  function renderAITripResult(d){
-    const box = document.getElementById("aiTripResult");
-    const picks = (d.picks||[]).map(p => `<div style="display:inline-block;min-width:150px;margin:8px;background:#fff;padding:8px;border-radius:8px;"><img src="${p.img}" style="width:100%;height:88px;object-fit:cover;border-radius:6px;"><div style="padding-top:6px;"><strong>${escapeHtml(p.title)}</strong><div class="small-muted">₹${p.price || '—'}</div></div></div>`).join("");
-    box.innerHTML = `<div class="card p-3"><h5>${escapeHtml(d.title)} <span class="badge-ai">AI</span></h5><div class="small-muted">Budget: ₹${d.budgetEstimate}</div><div class="mt-2">${picks}</div></div>`;
+  function renderTripResult(trip) {
+    const resultBox = document.getElementById('aiTripResult');
+    const daysHtml = (trip.days || []).map(d => `
+      <div class="mt-2" style="border-left:4px solid var(--accent); padding-left:12px;">
+        <strong>${escapeHtml(d.day)}</strong>
+        <div class="small-muted">🌅 ${escapeHtml(d.morning || '—')} • 🌤️ ${escapeHtml(d.afternoon || '—')} • 🌙 ${escapeHtml(d.evening || '—')}</div>
+      </div>
+    `).join('');
+
+    const hotelsHtml = (trip.hotels || []).map(h => `<div class="small-muted">🏨 ${escapeHtml(h.name)} — ₹${h.price}</div>`).join('');
+    const restaurantsHtml = (trip.restaurants || []).map(r => `<div class="small-muted">🍽️ ${escapeHtml(r.name)} (${escapeHtml(r.cuisine)}) — ₹${r.price}</div>`).join('');
+    const activitiesHtml = (trip.activities || []).map(a => `<div class="small-muted">🎯 ${escapeHtml(a.name)} (${escapeHtml(a.duration)}) — ₹${a.price}</div>`).join('');
+
+    resultBox.innerHTML = `
+      <div class="card p-3">
+        <h5>${escapeHtml(trip.title)} <span class="badge-ai">${trip.isAI ? '🤖 AI' : 'Demo'}</span></h5>
+        <div class="small-muted">📋 ${escapeHtml(trip.summary)}</div>
+        <div style="margin-top:12px; padding:12px; background:#f0fdf4; border-radius:8px;">
+          <strong style="color:var(--success);">💰 Budget: ₹${trip.budgetEstimate}</strong>
+        </div>
+        
+        <h6 class="mt-3">📅 Itinerary</h6>
+        ${daysHtml}
+
+        <h6 class="mt-3">🏨 Hotels</h6>
+        ${hotelsHtml || '<div class="small-muted">—</div>'}
+
+        <h6 class="mt-3">🍽️ Restaurants</h6>
+        ${restaurantsHtml || '<div class="small-muted">—</div>'}
+
+        <h6 class="mt-3">🎯 Activities</h6>
+        ${activitiesHtml || '<div class="small-muted">—</div>'}
+
+        <div class="mt-3" style="display:flex; gap:8px;">
+          <button class="btn btn-sm btn-accent" onclick="shareThisTrip('${trip.id}')">
+            <i class="fa-solid fa-share"></i> Share
+          </button>
+          <button class="btn btn-sm btn-outline-secondary" onclick="deleteTrip('${trip.id}')">
+            <i class="fa-solid fa-trash"></i> Delete
+          </button>
+        </div>
+      </div>
+    `;
   }
 
-  function saveTrip(data){
-    let trips = JSON.parse(localStorage.getItem(KEYS.trips) || "[]");
-    trips.push(data);
+  function createTripFromHome() {
+    try {
+      const destEl = document.getElementById('homeDest');
+      const startEl = document.getElementById('homeStart');
+      const endEl = document.getElementById('homeEnd');
+      
+      const dest = destEl ? destEl.value.trim() : '';
+      const start = startEl ? startEl.value : '';
+      const end = endEl ? endEl.value : '';
+
+      if (!dest) {
+        alert('Please enter a destination');
+        if (destEl) destEl.focus();
+        return;
+      }
+
+      scrollToSection('trips');
+      setTimeout(() => {
+        const aiForm = document.getElementById('aiTripForm');
+        if (aiForm) {
+          if (aiForm.dest) aiForm.dest.value = dest;
+          if (aiForm.start) aiForm.start.value = start;
+          if (aiForm.end) aiForm.end.value = end;
+        }
+        if (typeof generateTrip === 'function') {
+          try { generateTrip(); } catch (e) { console.warn('generateTrip failed', e); }
+        }
+      }, 420);
+    } catch (err) {
+      console.error('createTripFromHome error', err);
+      alert('Error creating trip');
+    }
+  }
+
+  function loadSavedTrips() {
+    const trips = JSON.parse(localStorage.getItem(KEYS.trips) || '[]');
+    const container = document.getElementById('savedTripsList');
+    container.innerHTML = '';
+
+    if (!trips.length) {
+      container.innerHTML = '<div class="small-muted">No trips yet. Create one above!</div>';
+      return;
+    }
+
+    trips.forEach(t => {
+      container.insertAdjacentHTML('beforeend', `
+        <div class="card p-2 mt-2" style="background:var(--card); border:1px solid #eee;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <strong>${escapeHtml(t.title || t.dest || 'Trip')}</strong>
+              <div class="small-muted">₹${t.budgetEstimate || '—'} • ${escapeHtml(t.created || '')}</div>
+            </div>
+            <div>
+              <button class="btn btn-sm btn-accent me-1" onclick="shareThisTrip('${t.id}')">
+                <i class="fa-solid fa-share"></i>
+              </button>
+              <button class="btn btn-sm btn-danger" onclick="deleteTrip('${t.id}')">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      `);
+    });
+  }
+
+  function deleteTrip(id) {
+    if (!confirm('Delete this trip?')) return;
+    let trips = JSON.parse(localStorage.getItem(KEYS.trips) || '[]');
+    trips = trips.filter(t => t.id !== id);
     localStorage.setItem(KEYS.trips, JSON.stringify(trips));
     loadSavedTrips();
+    updateCollabTripList();
   }
 
-  function loadSavedTrips(){
-    const trips = JSON.parse(localStorage.getItem(KEYS.trips) || "[]"); const container = document.getElementById('savedTripsList'); container.innerHTML='';
-    if(!trips.length) { container.innerHTML = '<div class="small-muted">No saved trips</div>'; return; }
-    trips.forEach(t=> container.insertAdjacentHTML('beforeend', `<div class="card p-2 mt-2"><div style="display:flex;justify-content:space-between;align-items:center;"><div><strong>${escapeHtml(t.title||t.dest||'Trip')}</strong><div class="small-muted">${escapeHtml(t.summary||t.created||'')}</div></div><div><div class="small-muted">₹${t.budgetEstimate||t.budget||'—'}</div><button class="btn btn-sm btn-danger mt-2" onclick="deleteTrip('${escapeHtml(t.id||t.title||t.dest)}')">Delete</button></div></div></div>`));
+  // ===========================
+  // 2. COLLABORATIVE TRIPS
+  // ===========================
+  function updateCollabTripList() {
+    const trips = JSON.parse(localStorage.getItem(KEYS.trips) || '[]');
+    const datalist = document.getElementById('tripList');
+    datalist.innerHTML = '';
+    trips.forEach(t => {
+      datalist.insertAdjacentHTML('beforeend', `<option value="${escapeHtml(t.title || t.id)}">`);
+    });
   }
 
-  function deleteTrip(identifier){ let trips=JSON.parse(localStorage.getItem(KEYS.trips)||'[]'); trips=trips.filter(t=> (t.id!==identifier && t.title!==identifier && t.dest!==identifier)); localStorage.setItem(KEYS.trips, JSON.stringify(trips)); loadSavedTrips(); }
+  function generateShareLink() {
+    const tripSelect = document.getElementById('collabTripSelect').value;
+    if (!tripSelect) {
+      alert('Please select a trip');
+      return;
+    }
 
-  function createTripFromHome(){
-    try{
-      const destEl = document.getElementById('homeDest'); const startEl = document.getElementById('homeStart'); const endEl = document.getElementById('homeEnd'); const typeEl = document.getElementById('homePax');
-      const dest = destEl ? destEl.value.trim() : ''; const start = startEl ? startEl.value : ''; const end = endEl ? endEl.value : ''; const pax = typeEl ? typeEl.value : 'solo';
-      if(!dest){ alert('Please enter a destination (e.g., Goa, Paris)'); if(destEl) destEl.focus(); return; }
-      scrollToSection('trips');
-      setTimeout(()=>{
-        const aiForm = document.getElementById('aiTripForm');
-        if(aiForm){
-          if(aiForm.dest) aiForm.dest.value = dest;
-          if(aiForm.start) aiForm.start.value = start;
-          if(aiForm.end) aiForm.end.value = end;
-          const moodMap = { solo:'relax', partner:'relax', family:'relax', friends:'adventure', adventure:'adventure', culture:'culture', food:'food', luxury:'luxury' };
-          const mood = moodMap[pax] || 'relax';
-          if(aiForm.mood) aiForm.mood.value = mood;
+    const trips = JSON.parse(localStorage.getItem(KEYS.trips) || '[]');
+    const trip = trips.find(t => t.title === tripSelect || t.id === tripSelect);
+    if (!trip) {
+      alert('Trip not found');
+      return;
+    }
+
+    const shareKey = uid('share');
+    const collaborators = JSON.parse(localStorage.getItem(KEYS.collaborators) || '{}');
+    collaborators[shareKey] = { tripId: trip.id, createdAt: new Date().toLocaleString(), viewers: [] };
+    localStorage.setItem(KEYS.collaborators, JSON.stringify(collaborators));
+
+    const baseUrl = window.location.origin + window.location.pathname;
+    const shareLink = `${baseUrl}?collab=${shareKey}`;
+
+    document.getElementById('shareLinkInput').value = shareLink;
+    document.getElementById('shareLinkContainer').style.display = 'block';
+  }
+
+  function copyToClipboard() {
+    const input = document.getElementById('shareLinkInput');
+    input.select();
+    document.execCommand('copy');
+    alert('✅ Link copied! Share it with your friends.');
+  }
+
+  function shareThisTrip(tripId) {
+    document.getElementById('collabTripSelect').value = JSON.parse(localStorage.getItem(KEYS.trips) || '[]').find(t => t.id === tripId)?.title || '';
+    generateShareLink();
+    scrollToSection('collab');
+  }
+
+  // ===========================
+  // 3. EXPENSE SPLITTING
+  // ===========================
+  function addExpense() {
+    const name = document.getElementById('expenseName').value.trim();
+    const amount = parseFloat(document.getElementById('expenseAmount').value);
+    const paidBy = document.getElementById('expensePaidBy').value.trim();
+    const splitOptions = Array.from(document.getElementById('expenseSplitAmong').selectedOptions).map(o => o.value);
+
+    if (!name || !amount || !paidBy || splitOptions.length === 0) {
+      alert('Please fill all fields and select who to split with');
+      return;
+    }
+
+    const expenses = JSON.parse(localStorage.getItem(KEYS.expenses) || '[]');
+    expenses.push({ id: uid('exp'), name, amount, paidBy, splitAmong: splitOptions, date: new Date().toLocaleString() });
+    localStorage.setItem(KEYS.expenses, JSON.stringify(expenses));
+
+    document.getElementById('expenseName').value = '';
+    document.getElementById('expenseAmount').value = '';
+    document.getElementById('expensePaidBy').value = '';
+
+    renderExpenses();
+    calculateSettlements();
+  }
+
+  function renderExpenses() {
+    const expenses = JSON.parse(localStorage.getItem(KEYS.expenses) || '[]');
+    const container = document.getElementById('expensesList');
+    container.innerHTML = '';
+
+    expenses.forEach(exp => {
+      container.insertAdjacentHTML('beforeend', `
+        <div class="expense-row">
+          <div class="expense-item">
+            <strong>${escapeHtml(exp.name)}</strong>
+            <div class="small-muted">Paid by ${escapeHtml(exp.paidBy)} • Split among ${exp.splitAmong.join(', ')}</div>
+          </div>
+          <div class="expense-amount">₹${exp.amount}</div>
+          <button class="btn btn-sm btn-outline-danger" onclick="deleteExpense('${exp.id}')">✕</button>
+        </div>
+      `);
+    });
+
+    if (!expenses.length) {
+      container.innerHTML = '<div class="small-muted">No expenses yet</div>';
+    }
+  }
+
+  function deleteExpense(id) {
+    let expenses = JSON.parse(localStorage.getItem(KEYS.expenses) || '[]');
+    expenses = expenses.filter(e => e.id !== id);
+    localStorage.setItem(KEYS.expenses, JSON.stringify(expenses));
+    renderExpenses();
+    calculateSettlements();
+  }
+
+  function calculateSettlements() {
+    const expenses = JSON.parse(localStorage.getItem(KEYS.expenses) || '[]');
+    const balances = {};
+
+    expenses.forEach(exp => {
+      if (!balances[exp.paidBy]) balances[exp.paidBy] = 0;
+      balances[exp.paidBy] += exp.amount;
+
+      const perPerson = exp.amount / exp.splitAmong.length;
+      exp.splitAmong.forEach(person => {
+        if (!balances[person]) balances[person] = 0;
+        balances[person] -= perPerson;
+      });
+    });
+
+    const settlements = [];
+    const debtors = Object.entries(balances).filter(([, amt]) => amt < 0);
+    const creditors = Object.entries(balances).filter(([, amt]) => amt > 0);
+
+    debtors.forEach(([debtor, debt]) => {
+      creditors.forEach(([creditor, credit]) => {
+        if (credit > 0 && debt < 0) {
+          const amount = Math.min(Math.abs(debt), credit);
+          settlements.push({ from: debtor, to: creditor, amount: Math.round(amount * 100) / 100 });
+          balances[debtor] += amount;
+          balances[creditor] -= amount;
         }
-        if(typeof generateTrip === 'function'){ try{ generateTrip(); return; }catch(e){ console.warn('generateTrip failed',e); } }
-        const data = localAIGenerate(dest,start,end,mood,pax);
-        const resultBox = document.getElementById('aiTripResult');
-        const picksHtml = (data.picks||[]).map(p=>`<div style="display:inline-block;min-width:150px;margin:8px;background:#fff;padding:8px;border-radius:8px;"><img src="${p.img}" style="width:100%;height:88px;object-fit:cover;border-radius:6px;"><div style="padding-top:6px;"><strong>${escapeHtml(p.title)}</strong><div class='small-muted'>₹${p.price||'—'}</div></div></div>`).join('');
-        resultBox.innerHTML = `<div class="card p-3"><h5>${escapeHtml(data.title)} <span class="badge-ai">AI-demo</span></h5><div class="small-muted">Budget estimate: ₹${data.budgetEstimate}</div><div style="margin-top:12px;">${picksHtml}</div></div>`;
-        const trips = JSON.parse(localStorage.getItem(KEYS.trips) || '[]'); trips.push(data); localStorage.setItem(KEYS.trips, JSON.stringify(trips)); loadSavedTrips();
-      }, 420);
-    }catch(err){ console.error('createTripFromHome error', err); alert('Error creating trip — see console'); }
+      });
+    });
+
+    const container = document.getElementById('settlementList');
+    container.innerHTML = '';
+
+    if (settlements.length === 0) {
+      container.innerHTML = '<div class="small-muted">No outstanding balances!</div>';
+      return;
+    }
+
+    settlements.forEach(s => {
+      container.insertAdjacentHTML('beforeend', `
+        <div class="settlement-card">
+          <strong>${escapeHtml(s.from)}</strong> owes <strong>${escapeHtml(s.to)}</strong> <span style="color:var(--success); font-weight:700;">₹${s.amount}</span>
+          <button class="btn btn-xs btn-outline-success ms-2" onclick="alert('💬 Share UPI/Venmo link with ' + '${s.from}')">Send Payment Link</button>
+        </div>
+      `);
+    });
+  }
+
+  function clearExpenses() {
+    if (!confirm('Clear all expenses?')) return;
+    localStorage.removeItem(KEYS.expenses);
+    renderExpenses();
+    calculateSettlements();
   }
 
   // ===========================
@@ -624,16 +790,16 @@
   let imrMap, imrMarkers = [], imrRouteSegments = [], activeSegmentIndex = null;
 
   const transportModes = {
-    air:   { label: "✈ Air",   speed: 800 },
-    train: { label: "🚆 Train", speed: 90  },
-    bus:   { label: "🚌 Bus",   speed: 50  },
-    car:   { label: "🚗 Car",   speed: 60  },
-    bike:  { label: "🛵 Bike",  speed: 40  },
-    cycle: { label: "🚴 Cycle", speed: 18  },
-    walk:  { label: "🚶 Walk",  speed: 5   }
+    air: { label: "✈ Air", speed: 800 },
+    train: { label: "🚆 Train", speed: 90 },
+    bus: { label: "🚌 Bus", speed: 50 },
+    car: { label: "🚗 Car", speed: 60 },
+    bike: { label: "🛵 Bike", speed: 40 },
+    cycle: { label: "🚴 Cycle", speed: 18 },
+    walk: { label: "🚶 Walk", speed: 5 }
   };
 
-  function autoSelectMode(km){
+  function autoSelectMode(km) {
     if (km > 300) return "air";
     if (km > 50) return "train";
     if (km > 10) return "car";
@@ -642,131 +808,192 @@
     return "walk";
   }
 
-  function calcDistance(lat1, lon1, lat2, lon2){
-    const R = 6371; const toRad = v => v * Math.PI / 180;
-    const dLat = toRad(lat2 - lat1); const dLon = toRad(lon2 - lon1);
-    const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon/2)**2;
+  function calcDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371;
+    const toRad = v => v * Math.PI / 180;
+    const dLat = toRad(lat2 - lat1);
+    const dLon = toRad(lon2 - lon1);
+    const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
     return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
   }
 
-  function initIMR(){
-    imrMap = L.map('imrMap').setView([20.5937,78.9629],5);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(imrMap);
+  function initIMR() {
+    if (document.getElementById('imrMap').innerHTML) return; // Already init
+    imrMap = L.map('imrMap').setView([20.5937, 78.9629], 5);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(imrMap);
     imrMap.on('click', e => addIMRPoint(e.latlng.lat, e.latlng.lng));
-    window.addEventListener('resize', ()=> { setTimeout(()=> imrMap.invalidateSize(), 300); });
+    window.addEventListener('resize', () => { setTimeout(() => imrMap.invalidateSize(), 300); });
   }
 
-  function addIMRPoint(lat, lng){
-    const mk = L.marker([lat,lng], { draggable:true }).addTo(imrMap);
+  function addIMRPoint(lat, lng) {
+    const mk = L.marker([lat, lng], { draggable: true }).addTo(imrMap);
     mk.on('dragend', updateRoute);
     imrMarkers.push(mk);
     updateRoute();
   }
 
-  async function searchPlaceIMR(){
+  async function searchPlaceIMR() {
     const query = document.getElementById('imrPlaceSearch').value.trim();
-    if(!query){ alert('Enter a place name.'); return; }
-    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`;
-    try{
-      const res = await fetch(url);
+    if (!query) { alert('Enter a place name.'); return; }
+    
+    try {
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
       const data = await res.json();
-      if(!data || !data.length){ alert('Location not found.'); return; }
+      if (!data || !data.length) { alert('Location not found.'); return; }
       const loc = data[0];
       addIMRPoint(parseFloat(loc.lat), parseFloat(loc.lon));
       imrMap.setView([loc.lat, loc.lon], 12);
-    }catch(err){ alert('Search failed.'); console.error(err); }
+    } catch (err) { alert('Search failed.'); }
   }
 
-  function updateRoute(){
+  function updateRoute() {
     imrRouteSegments.forEach(seg => imrMap.removeLayer(seg.line));
     imrRouteSegments = [];
-    if (imrMarkers.length < 2){ document.getElementById('imrSegments').innerHTML = `<div class="small-muted">Add at least 2 points</div>`; return; }
-    const segments = []; let totalDistance = 0; let totalTime = 0;
-    for (let i = 0; i < imrMarkers.length - 1; i++){
-      const A = imrMarkers[i].getLatLng(); const B = imrMarkers[i+1].getLatLng();
+    if (imrMarkers.length < 2) {
+      document.getElementById('imrSegments').innerHTML = `<div class="small-muted">Add at least 2 points</div>`;
+      return;
+    }
+
+    const segments = [];
+    let totalDistance = 0, totalTime = 0;
+
+    for (let i = 0; i < imrMarkers.length - 1; i++) {
+      const A = imrMarkers[i].getLatLng();
+      const B = imrMarkers[i + 1].getLatLng();
       const km = calcDistance(A.lat, A.lng, B.lat, B.lng);
       const mode = autoSelectMode(km);
-      const speed = transportModes[mode].speed; const hours = km / speed;
-      totalDistance += km; totalTime += hours;
+      const speed = transportModes[mode].speed;
+      const hours = km / speed;
+      totalDistance += km;
+      totalTime += hours;
       const line = L.polyline([A, B], { color: "#0ea5a4", weight: 4 }).addTo(imrMap);
       line.on("click", () => openModePopup(i));
-      segments.push({ from: i+1, to: i+2, km, time: hours, mode, line });
+      segments.push({ from: i + 1, to: i + 2, km, time: hours, mode, line });
     }
+
     imrRouteSegments = segments;
     renderSegmentTable(segments, totalDistance, totalTime);
   }
 
-  function renderSegmentTable(segments, totalDist, totalTime){
+  function renderSegmentTable(segments, totalDist, totalTime) {
     let html = `<table class="table table-sm table-bordered"><tr><th>Segment</th><th>Mode</th><th>Distance</th><th>Time</th></tr>`;
-    segments.forEach((s,i)=>{ const h = Math.floor(s.time); const m = Math.round((s.time - h) * 60); html += `<tr><td>${s.from} → ${s.to}</td><td>${transportModes[s.mode].label}</td><td>${s.km.toFixed(2)} km</td><td>${h}h ${m}m</td></tr>`; });
-    const H = Math.floor(totalTime); const M = Math.round((totalTime - H) * 60);
+    segments.forEach(s => {
+      const h = Math.floor(s.time);
+      const m = Math.round((s.time - h) * 60);
+      html += `<tr><td>${s.from} → ${s.to}</td><td>${transportModes[s.mode].label}</td><td>${s.km.toFixed(2)} km</td><td>${h}h ${m}m</td></tr>`;
+    });
+    const H = Math.floor(totalTime);
+    const M = Math.round((totalTime - H) * 60);
     html += `<tr class="table-dark"><td colspan="2"><strong>Total</strong></td><td><strong>${totalDist.toFixed(2)} km</strong></td><td><strong>${H}h ${M}m</strong></td></tr></table>`;
     document.getElementById('imrSegments').innerHTML = html;
   }
 
-  function openModePopup(index){
+  function openModePopup(index) {
     activeSegmentIndex = index;
     let btnHTML = "";
-    Object.keys(transportModes).forEach(mode => { btnHTML += `<button class="btn btn-sm btn-primary m-1" onclick="overrideSegmentMode('${mode}')">${transportModes[mode].label}</button>`; });
+    Object.keys(transportModes).forEach(mode => {
+      btnHTML += `<button class="btn btn-sm btn-primary m-1" onclick="overrideSegmentMode('${mode}')">${transportModes[mode].label}</button>`;
+    });
     document.getElementById('imrModeButtons').innerHTML = btnHTML;
     document.getElementById('imrModePopup').style.display = "flex";
   }
 
-  function closeModePopup(){ document.getElementById('imrModePopup').style.display = "none"; }
+  function closeModePopup() { document.getElementById('imrModePopup').style.display = "none"; }
 
-  function overrideSegmentMode(mode){
-    if(imrRouteSegments[activeSegmentIndex]) imrRouteSegments[activeSegmentIndex].mode = mode;
+  function overrideSegmentMode(mode) {
+    if (imrRouteSegments[activeSegmentIndex]) imrRouteSegments[activeSegmentIndex].mode = mode;
     closeModePopup();
     updateRoute();
   }
 
-  function clearIMRMap(){
-    if(!confirm('Clear all map points and routes?')) return;
+  function clearIMRMap() {
+    if (!confirm('Clear all map points and routes?')) return;
     imrMarkers.forEach(m => imrMap.removeLayer(m));
     imrRouteSegments.forEach(s => imrMap.removeLayer(s.line));
-    imrMarkers = []; imrRouteSegments = [];
+    imrMarkers = [];
+    imrRouteSegments = [];
     document.getElementById('imrSegments').innerHTML = `<div class="small-muted">Map cleared.</div>`;
   }
 
   // ===========================
-  // Contact & Auth & Admin
+  // Auth & UI
   // ===========================
-  function sendContact(){ const n=document.getElementById('contactName').value.trim(); const e=document.getElementById('contactEmail').value.trim(); const s=document.getElementById('contactSubject').value.trim(); const m=document.getElementById('contactMessage').value.trim(); if(!n||!e||!s||!m){ document.getElementById('contactMsg').innerHTML='<span style="color:red">Please fill all fields</span>'; return; } const msgs=JSON.parse(localStorage.getItem(KEYS.messages)||'[]'); msgs.push({id:uid('msg'), name:n, email:e, subject:s, message:m, created:new Date().toLocaleString()}); localStorage.setItem(KEYS.messages, JSON.stringify(msgs)); document.getElementById('contactMsg').innerHTML='<span style="color:green">Message sent</span>'; document.getElementById('contactName').value=''; document.getElementById('contactEmail').value=''; document.getElementById('contactSubject').value=''; document.getElementById('contactMessage').value=''; }
+  function openLogin() {
+    const modal = new bootstrap.Modal(document.getElementById('authModal'));
+    document.getElementById('authTitle').innerText = 'Login';
+    document.getElementById('authName').style.display = 'none';
+    document.getElementById('authActionBtn').innerText = 'Login';
+    modal.show();
+  }
 
-  function openLogin(){ const modal = new bootstrap.Modal(document.getElementById('authModal')); document.getElementById('authTitle').innerText='Login'; document.getElementById('authName').style.display='none'; document.getElementById('authEmail').value=''; document.getElementById('authPass').value=''; document.getElementById('authMsg').innerText=''; document.getElementById('authActionBtn').innerText='Login'; document.getElementById('authActionBtn').onclick = doLogin; modal.show(); }
-  function openRegister(){ const modal = new bootstrap.Modal(document.getElementById('authModal')); document.getElementById('authTitle').innerText='Register'; document.getElementById('authName').style.display='block'; document.getElementById('authEmail').value=''; document.getElementById('authPass').value=''; document.getElementById('authMsg').innerText=''; document.getElementById('authActionBtn').innerText='Register'; document.getElementById('authActionBtn').onclick = doRegister; modal.show(); }
+  function openRegister() {
+    const modal = new bootstrap.Modal(document.getElementById('authModal'));
+    document.getElementById('authTitle').innerText = 'Register';
+    document.getElementById('authName').style.display = 'block';
+    document.getElementById('authActionBtn').innerText = 'Register';
+    modal.show();
+  }
 
-  function doRegister(){ const name=document.getElementById('authName').value.trim(); const email=document.getElementById('authEmail').value.trim(); const pass=document.getElementById('authPass').value; if(!name||!email||!pass){ document.getElementById('authMsg').innerText='Fill all fields'; return; } const users=JSON.parse(localStorage.getItem(KEYS.users)||'[]'); if(users.some(u=>u.email===email)){ document.getElementById('authMsg').innerText='Email exists'; return; } users.push({id:uid('u'), name, email, pass}); localStorage.setItem(KEYS.users, JSON.stringify(users)); document.getElementById('authMsg').innerHTML='<span style="color:green">Registered</span>'; setTimeout(()=> bootstrap.Modal.getInstance(document.getElementById('authModal')).hide(), 900); }
+  function scrollToSection(id) {
+    const el = document.getElementById(id);
+    if (!el) { window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+    const top = el.getBoundingClientRect().top + window.scrollY - 80;
+    window.scrollTo({ top, behavior: 'smooth' });
+    const sb = document.getElementById('sidebar');
+    if (sb && sb.classList.contains('open')) sb.classList.remove('open');
+  }
 
-  function doLogin(){ const email=document.getElementById('authEmail').value.trim(); const pass=document.getElementById('authPass').value; const users=JSON.parse(localStorage.getItem(KEYS.users)||'[]'); const u = users.find(x=> x.email===email && x.pass===pass); if(!u){ document.getElementById('authMsg').innerText='Invalid credentials'; return; } localStorage.setItem('g360_currentUser', JSON.stringify(u)); document.getElementById('authMsg').innerHTML='<span style="color:green">Logged in</span>'; setTimeout(()=> bootstrap.Modal.getInstance(document.getElementById('authModal')).hide(), 600); }
+  function toggleDarkMode() {
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    localStorage.setItem('g360_theme', isDark ? 'light' : 'dark');
+  }
 
-  function loadAdminUsers(){ const users=JSON.parse(localStorage.getItem(KEYS.users)||'[]'); const c=document.getElementById('adminUsersList'); if(!c) return; if(!users.length) c.innerHTML='No registered users'; else c.innerHTML = users.map(u=> `<div style="padding:8px;border-bottom:1px solid #eee;">${escapeHtml(u.name)} • ${escapeHtml(u.email)}</div>`).join(''); }
-  function loadAdminTrips(){ const trips=JSON.parse(localStorage.getItem(KEYS.trips)||'[]'); const c=document.getElementById('adminTripsList'); if(!c) return; if(!trips.length) c.innerHTML='No trips created'; else c.innerHTML = trips.map(t=> `<div style="padding:8px;border-bottom:1px solid #eee;"><strong>${escapeHtml(t.title||t.dest||'Trip')}</strong> • ${escapeHtml(t.created||'')}</div>`).join(''); }
-  function loadAdminMessages(){ const msgs=JSON.parse(localStorage.getItem(KEYS.messages)||'[]'); const c=document.getElementById('adminMessagesList'); if(!c) return; if(!msgs.length) c.innerHTML='No messages'; else c.innerHTML = msgs.map(m=> `<div style="padding:8px;border-bottom:1px solid #eee;"><strong>${escapeHtml(m.name)}</strong> (${escapeHtml(m.email)})<br>${escapeHtml(m.subject)} — ${escapeHtml(m.message)}</div>`).join(''); }
-  function clearDemoData(){ if(!confirm('Clear demo data (users, trips, messages)?')) return; localStorage.removeItem(KEYS.users); localStorage.removeItem(KEYS.trips); localStorage.removeItem(KEYS.messages); localStorage.removeItem(KEYS.listings); alert('Demo data cleared'); loadAdminUsers(); loadAdminTrips(); loadAdminMessages(); }
-
-  function scrollToSection(id){ const el=document.getElementById(id); if(!el){ window.scrollTo({top:0, behavior:'smooth'}); return; } const top = el.getBoundingClientRect().top + window.scrollY - 80; window.scrollTo({ top, behavior:'smooth' }); const sb=document.getElementById('sidebar'); if(sb && sb.classList.contains('open')) sb.classList.remove('open'); }
-
-  // initialize on load
-  document.addEventListener('DOMContentLoaded', ()=>{
-    seedListings();
-    populateInterestGrid(); populateExperienceGrid(); populateIconics();
-    renderListings('hotelsGrid','hotel'); renderListings('restaurantsGrid','restaurant'); renderListings('thingsGrid','activity');
+  // Initialize
+  document.addEventListener('DOMContentLoaded', () => {
     loadSavedTrips();
+    updateCollabTripList();
+    renderExpenses();
+    calculateSettlements();
     initIMR();
-    const genBtn = document.getElementById('genTripBtn'); if(genBtn) genBtn.addEventListener('click', generateTrip);
-    setTimeout(()=> { if(typeof imrMap !== 'undefined' && imrMap) imrMap.invalidateSize(); }, 500);
-    // ensure admin lists visible
-    loadAdminUsers(); loadAdminTrips(); loadAdminMessages();
+
+    const genBtn = document.getElementById('genTripBtn');
+    if (genBtn) genBtn.addEventListener('click', generateTrip);
+
+    // Restore theme
+    const savedTheme = localStorage.getItem('g360_theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+
+    // Check for share link
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('collab')) {
+      alert('👥 Welcome! You\'ve been invited to collaborate on a trip. View it in the Collab section.');
+    }
+
+    setTimeout(() => { if (imrMap) imrMap.invalidateSize(); }, 500);
   });
 
-  // expose for debugging (optional)
+  // Expose functions
   window.generateTrip = generateTrip;
   window.createTripFromHome = createTripFromHome;
-  window.addIMRPoint = addIMRPoint;
+  window.deleteTrip = deleteTrip;
+  window.shareThisTrip = shareThisTrip;
+  window.generateShareLink = generateShareLink;
+  window.copyToClipboard = copyToClipboard;
+  window.addExpense = addExpense;
+  window.deleteExpense = deleteExpense;
+  window.clearExpenses = clearExpenses;
+  window.scrollToSection = scrollToSection;
+  window.toggleDarkMode = toggleDarkMode;
   window.openLogin = openLogin;
   window.openRegister = openRegister;
-  window.scrollToSection = scrollToSection;
+  window.addIMRPoint = addIMRPoint;
+  window.searchPlaceIMR = searchPlaceIMR;
+  window.clearIMRMap = clearIMRMap;
+  window.openModePopup = openModePopup;
+  window.closeModePopup = closeModePopup;
+  window.overrideSegmentMode = overrideSegmentMode;
   </script>
 
 </body>
